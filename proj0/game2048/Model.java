@@ -137,7 +137,18 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        int x =0;
+        int y=0;
+        while (x < b.size()){
+            while (y < b.size()) {
+                if (b.tile(x,y) != null) {
+                    return true;
+                }
+                y+=1;
+            }
+            x+=1;
+
+        }
         return false;
     }
 
@@ -147,9 +158,23 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
-        return false;
-    }
+        int x =0;
+        int y=0;
+        while (x < b.size()){
+                if (b.tile(x,y) != null) {
+                    if (b.tile(x,y).value()==2048){
+                        return true;
+                    }}
+                if (y < b.size()){
+                    y+=1;
+                }
+                if (y>=b.size()) {
+                    y=0;
+                    x+=1;
+                }
+            }
+            return false;
+        }
 
     /**
      * Returns true if there are any valid moves on the board.
