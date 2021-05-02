@@ -138,17 +138,20 @@ public class Model extends Observable {
      * */
     public static boolean emptySpaceExists(Board b) {
         int x =0;
-        int y=0;
+        int y =0;
         while (x < b.size()){
-            while (y < b.size()) {
-                if (b.tile(x,y) != null) {
-                    return true;
-                }
+            if (b.tile(x,y)==null) {
+                return true;
+            }
+            if (y < b.size()) {
                 y+=1;
             }
-            x+=1;
-
+            if (y >=b.size()){
+                y=0;
+                x+=1;
+            }
         }
+
         return false;
     }
 
@@ -183,8 +186,43 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        if (emptySpaceExists(b)) {
+            return true;
+        }
+        int x =0;
+        int y=1;
+        while (x < b.size()){
+            if (b.tile(x,y) != null) {
+                if (b.tile(x,y).value()==b.tile(x,y-1).value()){
+                    return true;
+                }}
+            if (y < b.size()){
+                y+=1;
+            }
+            if (y>=b.size()) {
+                y=1;
+                x+=1;
+            }
+        }
+        x =1;
+        y=0;
+        while (y < b.size()){
+            if (b.tile(x,y) != null) {
+                if (b.tile(x,y).value()==b.tile(x-1,y).value()){
+                    return true;
+                }}
+            if (x < b.size()){
+                x+=1;
+            }
+            if (x>=b.size()) {
+                x=1;
+                y+=1;
+            }
+        }
+
+
         return false;
+
     }
 
 
