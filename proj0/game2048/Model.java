@@ -114,12 +114,175 @@ public class Model extends Observable {
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
 
+        //Get all the second row
+        board.setViewingPerspective(side);
+
+        for (int column=0;column<board.size();column++) {
+            int[] current_column = get_column(column);
+            boolean[] merged = new boolean[4];
+            for (int i = 2; i >= 0; i--) {
+                int[] above = get_above(column,i);
+                int current_value= current_column[i];
+                Tile t=board.tile(column,i);
+                if (i==2){
+                    if (above[0]==0 && current_value!=0){
+                        board.move(column,3,t);
+                        current_column = get_column(column);
+                        changed=true;
+                    }
+                    else if (above[0]==current_value && current_value!=0){
+                        this.score+=current_value*2;
+                        merged[0]=true;
+                        board.move(column,3,t);
+                        current_column = get_column(column);
+                        changed=true;
+                    }
+                }
+                else if  (i==1){
+                    if (above[0]==0 && above[1]==0 && current_value!=0){
+                        board.move(column,3,t);
+                        current_column = get_column(column);
+                        changed=true;
+                    }
+                    else if (above[0]==0 && above[1]==current_value && current_value!=0 && merged[0]==false){
+                        this.score+=current_value*2;
+                        merged[0]=true;
+                        board.move(column,3,t);
+                        current_column = get_column(column);
+                        changed=true;
+                    }
+                    else if (above[0]==0 && above[1]==current_value && current_value!=0 && merged[0]==true){
+                        board.move(column,2,t);
+                        current_column = get_column(column);
+                        changed=true;
+                    }
+
+                    else if (above[0]==0 && above[1]!=current_value && current_value!=0)
+                    {
+                        board.move(column,2,t);
+                        current_column = get_column(column);
+                        changed=true;
+                    }
+
+                    else if (above[0]==current_value && above[1]!=current_value && current_value!=0 && merged[1]==false)
+                    {
+                        this.score+=current_value*2;
+                        merged[1]=true;
+                        board.move(column,2,t);
+                        current_column = get_column(column);
+                        changed=true;
+                    }
+
+
+                }
+                else if (i==0){
+                    int[] zero=new int[] {0,0,0};
+                    if (above[0]==0 && above[1]==0 && above[2]==0 && current_value!=0){
+                        board.move(column,3,t);
+                        current_column = get_column(column);
+                        changed=true;
+
+                    }
+                    else if (above[0]==0 && above[1]==0 && above[2]!=current_value && current_value!=0){
+                        board.move(column,2,t);
+                        current_column = get_column(column);
+                        changed=true;
+                    }
+                    else if (above[0]==0 && above[1]==0 && above[2]==current_value && current_value!=0 && merged[0]==false){
+                        merged[0]=true;
+                        this.score+=current_value*2;
+                        board.move(column,3,t);
+                        current_column = get_column(column);
+                        changed=true;
+                    }
+
+                    else if (above[0]==0 && above[1]==0 && above[2]==current_value && current_value!=0 && merged[0]==true){
+                        board.move(column,2,t);
+                        current_column = get_column(column);
+                        changed=true;
+                    }
+
+                    else if (above[0]==0 && above[1]==current_value && above[2]!=current_value && current_value!=0 && merged[1]==false){
+                        merged[1]=true;
+                        this.score+=current_value*2;
+                        board.move(column,2,t);
+                        current_column = get_column(column);
+                        changed=true;
+                    }
+                    else if (above[0]==0 && above[1]==current_value && above[2]!=current_value && current_value!=0 && merged[1]==true){
+                        board.move(column,1,t);
+                        current_column = get_column(column);
+                        changed=true;
+                    }
+
+                    else if (above[0]==current_value && above[1] !=current_value && above[2] !=current_value && current_value!=0 && merged[2]==false){
+                        merged[2]=true;
+                        this.score+=current_value*2;
+                        board.move(column,1,t);
+                        changed=true;
+                    }
+                    else if  (above[0]==0 && above[1] !=current_value && above[2] !=current_value && current_value!=0){
+                        board.move(column,1,t);
+                        current_column = get_column(column);
+                        changed=true;
+                    }
+
+                }
+            }
+        }
+
+        board.setViewingPerspective(Side.NORTH);
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
     }
+
+
+    public int[] get_row(int row_number) {
+        int[] array = new int[4];
+        for (int i=0; i < board.size();i++){
+            if (board.tile(i,row_number)==null){
+                array[i]=0;
+            }
+            else{
+                array[i]=board.tile(i,row_number).value();
+            }
+        }
+        return array;
+    }
+
+    public int[] get_column(int column_number) {
+        int[] array = new int[4];
+        for (int i=0; i < board.size();i++){
+            if (board.tile(column_number,i)==null){
+                array[i]=0;
+            }
+            else{
+                array[i]=board.tile(column_number,i).value();
+            }
+        }
+        return array;
+    }
+
+    public int[] get_above(int column, int row ){
+        int size=3-row;
+        int[] array = new int[size];
+        int start=row+1;
+        for (int j=start; j < board.size();j++){
+            int location=j-row-1;
+            if (board.tile(column,j)==null){
+                array[location]=0;
+            }
+            else{
+                array[location]=board.tile(column,j).value();
+            }
+        }
+        return array;
+
+    }
+
 
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
