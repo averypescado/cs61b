@@ -8,16 +8,17 @@ public class Main {
     /** Usage: java gitlet.Main ARGS, where ARGS contains
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
-    public static void main(String[] args) {
+    public static void main(String... args) {
         // TODO: what if args is empty?
+        Repository repo = new Repository();
         String firstArg = args[0];
         switch(firstArg) {
             case "init":
-                // TODO: handle the `init` command
+                repo.initCommand();
                 break;
             case "add":
-                // TODO: handle the `add [filename]` command
-                break;
+                repo.add(args[1]);
+                return;
             // TODO: FILL THE REST IN
         }
     }
