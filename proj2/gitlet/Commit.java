@@ -1,13 +1,15 @@
 package gitlet;
-import java.io.File;
-
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.Date;
+import java.io.File;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /** Represents a gitlet commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
@@ -31,12 +33,26 @@ public class Commit implements Serializable{
     private Date timestamp;
     private String parent;
 
-    public Commit(String message, String parent, Date timestamp) {
-        this.message=message;
+    public Commit(String message, String parent, HashMap<String, String> blobs) {
+        _message = message;
+        Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        _date = sdf.format(timestamp);
-        if (parent==null) {
+        _blobs = blobs;
+        _date = sdf.format(date);
+        _parent=parent;
+        if (_parent == null) {
             _hashval = Utils.sha1(message, _date);
+        } else {
+            String blobsha = null;
+            ArrayList<String> blobarray = new ArrayList<String>();
+            for (String ugh : blobs.values()) {
+                if (blobsha == null) {
+                    blobsha = Utils.sha1(ugh);
+                } else {
+                    blobsha = Utils.sha1(blobsha, ugh);
+                }
+            }
+            _hashval = Utils.sha1(message, _date, parent, blobsha);
         }
         try {
             File commit_file = new File(".gitlet/commits/" + _hashval +".ser");
@@ -45,13 +61,53 @@ public class Commit implements Serializable{
             objectOut.writeObject(this);
 
         } catch (IOException e) {
-         return;
-      }
+            return;
+        }
+    }
 
+
+    HashMap<String, String> getBlobs() {
+        return _blobs;
+    }
+
+    String getMessage() {
+        return _message;
+    }
+
+
+    String get_hashval() {
+        return _hashval;
+    }
+
+    String getParent(){
+        if (_parent == null){
+            return null;
+        }
+        return _parent;
+    }
+
+    String get_date(){
+        return _date;
+    }
+
+    void getLog(){
+        System.out.println("===");
+        System.out.println("Commit " + get_hashval());
+        get_date();
+        System.out.println(getMessage());
+        System.out.println("");
+        return;
 
     }
-      String _hashval;
-      String _date;
+
+
+    HashMap<String, String> _blobs;
+    String _hashval;
+    String _date;
+    String _message;
+    String _parent;
+
+
 
 }
 
